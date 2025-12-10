@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NORDO – Simple payments in Denmark without MobilePay</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="NORDO – Simple QR code payments for tourists in Denmark. Let guests pay with Apple Pay, Google Pay or cards – no MobilePay, no terminal, no app." />
+  <style>
+    :root {
+      --nordo-blue: #0c243c;
+      --nordo-blue-soft: #123457;
+      --nordo-mint: #52ccb8;
+      --nordo-mint-soft: #e0f7f2;
+      --nordo-light: #f7f7f9;
+      --nordo-text: #1c1f23;
+      --nordo-border: #dde1e5;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 14px 40px rgba(6, 26, 52, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color: var(--nordo-text);
+      background: radial-gradient(circle at top left, #eef8ff 0, #ffffff 45%, #f8fffb 100%);
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 20px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 2px solid var(--nordo-blue);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-n {
+      font-weight: 900;
+      font-size: 30px;
+      color: var(--nordo-blue);
+      letter-spacing: 0.12em;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-star {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 18px;
+      height: 18px;
+      background: var(--nordo-mint);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      box-shadow: 0 0 0 3px #ffffff;
+    }
+
+    .logo-wordmark {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .logo-text {
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 0.22em;
+      color: var(--nordo-blue);
+    }
+
+    .logo-tagline {
+      font-size: 12px;
+      color: #5b6168;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .lang-switch {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 999px;
+      padding: 4px 6px;
+      border: 1px solid rgba(12,36,60,0.12);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    }
+
+    .lang-icon {
+      font-size: 16px;
+      margin-right: 2px;
+    }
+
+    .lang-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      font: inherit;
+      opacity: 0.7;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .lang-btn.active {
+      border-color: var(--nordo-mint);
+      background: rgba(82, 204, 184, 0.18);
+      opacity: 1;
+    }
+
+    main {
+      margin-top: 8px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3.3fr) minmax(0, 2.2fr);
+      gap: 32px;
+      align-items: center;
+      padding: 28px 24px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(22, 58, 96, 0.98), #0b2238);
+      box-shadow: var(--shadow-soft);
+      color: #f7fbff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--nordo-mint);
+      box-shadow: 0 0 0 3px rgba(82, 204, 184, 0.3);
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 36px);
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #e2e9f5;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--nordo-mint);
+      color: var(--nordo-blue);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #f3f6ff;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .hero-note {
+      font-size: 13px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-note span {
+      font-size: 16px;
+    }
+
+    .hero-card {
+      background: radial-gradient(circle at top left, var(--nordo-mint-soft), #ffffff);
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+      color: var(--nordo-blue);
+    }
+
+    .hero-card-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--nordo-blue-soft);
+    }
+
+    .hero-card-sub {
+      font-size: 13px;
+      color: #425062;
+      margin-bottom: 12px;
+    }
+
+    .hero-card-qr {
+      margin-top: 4px;
+      border-radius: 14px;
+      border: 1px dashed var(--nordo-border);
+      padding: 10px;
+      background: #ffffff;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .hero-card-qr-box {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 6px;
+      background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, transparent);
+      background-size: 12px 12px;
+      border-radius: 8px;
+    }
+
+    .hero-card-logos {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #5b6570;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--nordo-blue);
+    }
+
+    .text-muted {
+      font-size: 14px;
+      color: #5b6168;
+      margin-bottom: 12px;
+    }
+
+    .section-inner {
+      margin-top: 18px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    ul li::before {
+      content: "•";
+      margin-right: 6px;
+      color: var(--nordo-mint);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    .card {
+      border-radius: 20px;
+      border: 1px solid var(--nordo-border);
+      padding: 16px;
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 10px 28px rgba(9, 30, 66, 0.05);
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--nordo-blue-soft);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    .step-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(82, 204, 184, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--nordo-blue);
+      margin-bottom: 8px;
+    }
+
+    .pre-register {
+      background: linear-gradient(135deg, #ffffff, #f5fbff);
+      border-radius: 24px;
+      padding: 20px;
+      border: 1px solid var(--nordo-border);
+      max-width: 680px;
+      box-shadow: 0 16px 34px rgba(9, 30, 66, 0.06);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 16px;
+      margin-top: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      display: block;
+      margin-bottom: 4px;
+      color: #3a4048;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--nordo-border);
+      font: inherit;
+      background: #ffffff;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--nordo-mint);
+      box-shadow: 0 0 0 2px rgba(82, 204, 184, 0.25);
+    }
+
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+    }
+
+    .security-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    footer {
+      border-top: 1px solid var(--nordo-border);
+      padding-top: 16px;
+      margin-top: 32px;
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: #6b7279;
+    }
+
+    footer a {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+
+    /* Language visibility */
+    [data-lang-section] {
+      display: none;
+    }
+    [data-lang-section].active {
+      display: block;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 20px 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding-inline: 12px;
+      }
+
+      header {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .logo-text {
+        font-size: 22px;
+      }
+
+      .hero {
+        border-radius: 22px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lang-switch {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo-wrap">
+        <!-- Logo: N + Stern im gemeinsamen Block -->
+        <div class="logo-mark">
+          <span class="logo-n">N</span>
+          <span class="logo-star"></span>
+        </div>
+        <div class="logo-wordmark">
+          <div class="logo-text">NORDO</div>
+          <div class="logo-tagline">TOURIST PAYMENTS · DENMARK</div>
+        </div>
+      </div>
+      <div class="lang-switch">
+        <button class="lang-btn" data-lang="en">
+          <span class="lang-icon">🇬🇧</span> EN
+        </button>
+        <button class="lang-btn" data-lang="dk">
+          <span class="lang-icon">🇩🇰</span> DK
+        </button>
+        <button class="lang-btn" data-lang="de">
+          <span class="lang-icon">🇩🇪</span> DE
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- DEUTSCH -->
+      <div class="lang-view" data-lang-section="de">
+        <section class="section hero">
+          <div>
+            <div class="badge">
+              <span class="badge-dot"></span>
+              <span>Für Händler in Dänemark</span>
+            </div>
+            <h1>Touristen können endlich bezahlen — auch ohne MobilePay.</h1>
+            <p class="hero-sub">
+              Eine einzige QR-Code-Lösung für Ihre Gäste: Bezahlung mit Apple Pay, Google Pay oder Karte – ohne App, ohne Terminal.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">Für Händler: Jetzt vorregistrieren</button>
+              <button class="btn btn-secondary">Mehr erfahren</button>
+            </div>
+            <p class="hero-note">
+              <span>ℹ️</span> Funktioniert überall – Marktstände, Hofläden, Foodtrucks, Flohmärkte, kleine Geschäfte.
+            </p>
+          </div>
+          <div>
+            <div class="hero-card">
+              <div class="hero-card-title">So sieht NORDO bei Ihnen aus:</div>
+              <p class="hero-card-sub">
+                Hängen Sie einfach diesen QR-Code an Ihren Stand. Touristen scannen und zahlen in Sekunden.
+              </p>
+              <div class="hero-card-qr">
+                <div class="hero-card-qr-box"></div>
+                <div>„Pay here with card · No app needed“</div>
+                <div class="hero-card-logos">
+                  <span>Apple Pay</span>·
+                  <span>Google Pay</span>·
+                  <span>Visa</span>·
+                  <span>Mastercard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Was ist NORDO?</h2>
+          <div class="section-inner two-col">
+            <div>
+              <p class="text-muted">
+                NORDO ist eine einfache Zahlungslösung speziell für Touristen in Dänemark.
+                Mit nur einem QR-Code können Gäste bei Ihnen bezahlen – selbst wenn sie kein MobilePay nutzen können.
+              </p>
+              <p class="text-muted">
+                Touristen scannen den Code, geben den Betrag ein und zahlen mit:
+              </p>
+              <ul>
+                <li>Apple Pay</li>
+                <li>Google Pay</li>
+                <li>Visa &amp; Mastercard</li>
+              </ul>
+              <p class="text-muted">
+                Keine App. Keine Registrierung. Keine Hardware.
+              </p>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">Für wen ist NORDO gedacht?</div>
+                <p class="text-muted">
+                  NORDO ist ideal für:
+                </p>
+                <ul>
+                  <li>Hofläden &amp; Gemüse- und Obststände</li>
+                  <li>Wochenmärkte &amp; Flohmärkte</li>
+                  <li>Foodtrucks &amp; kleine Imbisse</li>
+                  <li>Kleine Geschäfte in Ferienregionen</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Warum Händler NORDO wählen</h2>
+          <div class="cards">
+            <div class="card">
+              <div class="card-title">Mehr Umsatz von Touristen</div>
+              <p class="text-muted">
+                Viele Gäste haben kein MobilePay. Mit NORDO können sie endlich trotzdem bei Ihnen bezahlen.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Keine Geräte notwendig</div>
+              <p class="text-muted">
+                Kein Terminal, keine App, kein Strombedarf. Nur ein QR-Code.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Einfach für alle</div>
+              <p class="text-muted">
+                Gäste scannen, geben den Betrag ein und zahlen – in wenigen Sekunden.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Automatische Auszahlungen</div>
+              <p class="text-muted">
+                Sie erhalten Ihr Geld sicher und automatisch auf Ihr dänisches Bankkonto.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>So funktioniert es</h2>
+          <p class="text-muted">
+            NORDO ist in drei einfachen Schritten startklar:
+          </p>
+          <div class="steps">
+            <div class="card">
+              <div class="step-number">1</div>
+              <div class="card-title">Registrieren</div>
+              <p class="text-muted">
+                Erstellen Sie Ihr Händlerkonto in wenigen Minuten. Wir benötigen nur einige Basisdaten und Ihr Bankkonto.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">2</div>
+              <div class="card-title">QR-Code ausdrucken</div>
+              <p class="text-muted">
+                Sie erhalten einen persönlichen QR-Code als PDF und Sticker-Vorlage. Hängen Sie ihn einfach gut sichtbar auf.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">3</div>
+              <div class="card-title">Zahlung erhalten</div>
+              <p class="text-muted">
+                Touristen scannen, zahlen mit Apple Pay, Google Pay oder Karte – und Sie erhalten das Geld automatisch.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="pre-register">
+            <h2>Jetzt vorregistrieren</h2>
+            <p class="text-muted">
+              Werden Sie einer der ersten Händler in Dänemark, die NORDO nutzen. Wir informieren Sie, sobald das System startet.
+            </p>
+            <form>
+              <div class="form-grid">
+                <div>
+                  <label for="name-de">Name</label>
+                  <input id="name-de" type="text" name="name" placeholder="Ihr Name" />
+                </div>
+                <div>
+                  <label for="email-de">E-Mail</label>
+                  <input id="email-de" type="email" name="email" placeholder="Ihre E-Mail-Adresse" />
+                </div>
+                <div>
+                  <label for="business-de">Name des Standes / Geschäfts</label>
+                  <input id="business-de" type="text" name="business" placeholder="z.B. Hofladen Jensen" />
+                </div>
+                <div>
+                  <label for="region-de">Region in Dänemark</label>
+                  <input id="region-de" type="text" name="region" placeholder="z.B. Nordjylland" />
+                </div>
+              </div>
+              <div class="checkbox-row">
+                <input id="test-merchant-de" type="checkbox" name="test_merchant" />
+                <label for="test-merchant-de">Ich möchte Test-Händler werden.</label>
+              </div>
+              <div style="margin-top: 14px;">
+                <button type="submit" class="btn btn-primary">Absenden</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Sicherheit von Anfang an</h2>
+          <p class="text-muted">
+            Alle Zahlungen werden über Stripe abgewickelt – einen der weltweit vertrauenswürdigsten Zahlungsanbieter.
+            Kartendaten gelangen nie zu NORDO. Alles ist verschlüsselt und vollständig compliant.
+          </p>
+          <div class="security-logos">
+            <span>Powered by Stripe</span>
+            <span>· Visa</span>
+            <span>· Mastercard</span>
+            <span>· Apple Pay</span>
+            <span>· Google Pay</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- ENGLISH -->
+      <div class="lang-view" data-lang-section="en">
+        <section class="section hero">
+          <div>
+            <div class="badge">
+              <span class="badge-dot"></span>
+              <span>For merchants in Denmark</span>
+            </div>
+            <h1>Tourists can finally pay — even without MobilePay.</h1>
+            <p class="hero-sub">
+              One simple QR code for your guests: they pay with Apple Pay, Google Pay or card – no app, no terminal.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">For merchants: Pre-register</button>
+              <button class="btn btn-secondary">Learn more</button>
+            </div>
+            <p class="hero-note">
+              <span>ℹ️</span> Works everywhere – farm stands, markets, food trucks, flea markets, small shops.
+            </p>
+          </div>
+          <div>
+            <div class="hero-card">
+              <div class="hero-card-title">What NORDO looks like at your stand:</div>
+              <p class="hero-card-sub">
+                Simply hang this QR code at your stand. Tourists scan and pay in seconds.
+              </p>
+              <div class="hero-card-qr">
+                <div class="hero-card-qr-box"></div>
+                <div>“Pay here with card · No app needed”</div>
+                <div class="hero-card-logos">
+                  <span>Apple Pay</span>·
+                  <span>Google Pay</span>·
+                  <span>Visa</span>·
+                  <span>Mastercard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>What is NORDO?</h2>
+          <div class="section-inner two-col">
+            <div>
+              <p class="text-muted">
+                NORDO is a simple payment solution for tourists in Denmark.
+                With just one QR code, guests can pay you — even if they don’t have MobilePay.
+              </p>
+              <p class="text-muted">
+                Tourists scan the code, enter the amount and pay with:
+              </p>
+              <ul>
+                <li>Apple Pay</li>
+                <li>Google Pay</li>
+                <li>Visa &amp; Mastercard</li>
+              </ul>
+              <p class="text-muted">
+                No app. No registration. No hardware.
+              </p>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">Who is NORDO for?</div>
+                <p class="text-muted">
+                  NORDO is ideal for:
+                </p>
+                <ul>
+                  <li>Farm stands &amp; small produce stalls</li>
+                  <li>Markets &amp; flea markets</li>
+                  <li>Food trucks &amp; snack stands</li>
+                  <li>Small shops in tourist areas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Why merchants choose NORDO</h2>
+          <div class="cards">
+            <div class="card">
+              <div class="card-title">More sales from tourists</div>
+              <p class="text-muted">
+                Many guests don’t have MobilePay. With NORDO, they can finally pay you anyway.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">No devices required</div>
+              <p class="text-muted">
+                No terminal, no app, no power needed. Just one QR code.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Easy for everyone</div>
+              <p class="text-muted">
+                Guests scan, enter the amount and pay – in just a few seconds.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Automatic payouts</div>
+              <p class="text-muted">
+                You receive your money safely and automatically in your Danish bank account.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>How it works</h2>
+          <p class="text-muted">
+            NORDO is ready in three simple steps:
+          </p>
+          <div class="steps">
+            <div class="card">
+              <div class="step-number">1</div>
+              <div class="card-title">Register</div>
+              <p class="text-muted">
+                Create your merchant account in a few minutes. We only need basic details and your bank account.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">2</div>
+              <div class="card-title">Print your QR code</div>
+              <p class="text-muted">
+                You receive your personal QR code as a PDF and sticker template. Just place it where customers can see it.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">3</div>
+              <div class="card-title">Get paid</div>
+              <p class="text-muted">
+                Tourists scan, pay with Apple Pay, Google Pay or card – and you receive the money automatically.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="pre-register">
+            <h2>Pre-register now</h2>
+            <p class="text-muted">
+              Become one of the first merchants in Denmark to use NORDO. We’ll let you know as soon as the system launches.
+            </p>
+            <form>
+              <div class="form-grid">
+                <div>
+                  <label for="name-en">Name</label>
+                  <input id="name-en" type="text" name="name" placeholder="Your name" />
+                </div>
+                <div>
+                  <label for="email-en">Email</label>
+                  <input id="email-en" type="email" name="email" placeholder="Your email address" />
+                </div>
+                <div>
+                  <label for="business-en">Stand / business name</label>
+                  <input id="business-en" type="text" name="business" placeholder="e.g. Jensen Farm Stand" />
+                </div>
+                <div>
+                  <label for="region-en">Region in Denmark</label>
+                  <input id="region-en" type="text" name="region" placeholder="e.g. North Jutland" />
+                </div>
+              </div>
+              <div class="checkbox-row">
+                <input id="test-merchant-en" type="checkbox" name="test_merchant" />
+                <label for="test-merchant-en">I would like to become a test merchant.</label>
+              </div>
+              <div style="margin-top: 14px;">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Secure by design</h2>
+          <p class="text-muted">
+            All payments are processed by Stripe – one of the most trusted payment providers in the world.
+            Card details never touch NORDO. Everything is encrypted and fully compliant.
+          </p>
+          <div class="security-logos">
+            <span>Powered by Stripe</span>
+            <span>· Visa</span>
+            <span>· Mastercard</span>
+            <span>· Apple Pay</span>
+            <span>· Google Pay</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- DANSK -->
+      <div class="lang-view" data-lang-section="dk">
+        <section class="section hero">
+          <div>
+            <div class="badge">
+              <span class="badge-dot"></span>
+              <span>For sælgere i Danmark</span>
+            </div>
+            <h1>Turister kan endelig betale — selv uden MobilePay.</h1>
+            <p class="hero-sub">
+              Én simpel QR-kode til dine gæster: betaling med Apple Pay, Google Pay eller kort – uden app, uden terminal.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">For sælgere: Forhåndstilmelding</button>
+              <button class="btn btn-secondary">Læs mere</button>
+            </div>
+            <p class="hero-note">
+              <span>ℹ️</span> Fungerer overalt – gårdbutikker, markeder, foodtrucks, loppemarkeder, små butikker.
+            </p>
+          </div>
+          <div>
+            <div class="hero-card">
+              <div class="hero-card-title">Sådan ser NORDO ud hos dig:</div>
+              <p class="hero-card-sub">
+                Hæng blot denne QR-kode ved din stand. Turister scanner og betaler på få sekunder.
+              </p>
+              <div class="hero-card-qr">
+                <div class="hero-card-qr-box"></div>
+                <div>“Betal her med kort · Ingen app nødvendig”</div>
+                <div class="hero-card-logos">
+                  <span>Apple Pay</span>·
+                  <span>Google Pay</span>·
+                  <span>Visa</span>·
+                  <span>Mastercard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Hvad er NORDO?</h2>
+          <div class="section-inner two-col">
+            <div>
+              <p class="text-muted">
+                NORDO er en enkel betalingsløsning til turister i Danmark.
+                Med én QR-kode kan gæster betale dig – selv uden MobilePay.
+              </p>
+              <p class="text-muted">
+                Turister scanner koden, indtaster beløbet og betaler med:
+              </p>
+              <ul>
+                <li>Apple Pay</li>
+                <li>Google Pay</li>
+                <li>Visa &amp; Mastercard</li>
+              </ul>
+              <p class="text-muted">
+                Ingen app. Ingen registrering. Ingen hardware.
+              </p>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">Hvem er NORDO til?</div>
+                <p class="text-muted">
+                  NORDO er ideel til:
+                </p>
+                <ul>
+                  <li>Gårdbutikker &amp; grøntsagsboder</li>
+                  <li>Markeder &amp; loppemarkeder</li>
+                  <li>Foodtrucks &amp; små caféer</li>
+                  <li>Små butikker i turistområder</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Derfor vælger sælgere NORDO</h2>
+          <div class="cards">
+            <div class="card">
+              <div class="card-title">Flere salg fra turister</div>
+              <p class="text-muted">
+                Mange gæster har ikke MobilePay. Med NORDO kan de endelig betale alligevel.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Ingen udstyr nødvendig</div>
+              <p class="text-muted">
+                Ingen terminal, ingen app, intet strømkrav. Kun en QR-kode.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Nemt for alle</div>
+              <p class="text-muted">
+                Gæster scanner, indtaster beløbet og betaler – på få sekunder.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Automatiske udbetalinger</div>
+              <p class="text-muted">
+                Du modtager dine penge sikkert og automatisk på din danske bankkonto.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Sådan fungerer det</h2>
+          <p class="text-muted">
+            NORDO er klar i tre enkle trin:
+          </p>
+          <div class="steps">
+            <div class="card">
+              <div class="step-number">1</div>
+              <div class="card-title">Registrer dig</div>
+              <p class="text-muted">
+                Opret din sælgerkonto på få minutter. Vi skal blot bruge basisoplysninger og dine bankdetaljer.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">2</div>
+              <div class="card-title">Print din QR-kode</div>
+              <p class="text-muted">
+                Du får din personlige QR-kode som PDF og klistermærke-skabelon. Hæng den, hvor kunderne kan se den.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-number">3</div>
+              <div class="card-title">Modtag betaling</div>
+              <p class="text-muted">
+                Turister scanner, betaler med Apple Pay, Google Pay eller kort – og du modtager pengene automatisk.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="pre-register">
+            <h2>Forhåndstilmed dig nu</h2>
+            <p class="text-muted">
+              Bliv en af de første sælgere i Danmark, der bruger NORDO. Vi kontakter dig, når systemet lanceres.
+            </p>
+            <form>
+              <div class="form-grid">
+                <div>
+                  <label for="name-dk">Navn</label>
+                  <input id="name-dk" type="text" name="name" placeholder="Dit navn" />
+                </div>
+                <div>
+                  <label for="email-dk">E-mail</label>
+                  <input id="email-dk" type="email" name="email" placeholder="Din e-mailadresse" />
+                </div>
+                <div>
+                  <label for="business-dk">Navn på stand / butik</label>
+                  <input id="business-dk" type="text" name="business" placeholder="fx Jensen Gårdbutik" />
+                </div>
+                <div>
+                  <label for="region-dk">Region i Danmark</label>
+                  <input id="region-dk" type="text" name="region" placeholder="fx Nordjylland" />
+                </div>
+              </div>
+              <div class="checkbox-row">
+                <input id="test-merchant-dk" type="checkbox" name="test_merchant" />
+                <label for="test-merchant-dk">Jeg vil gerne være testsælger.</label>
+              </div>
+              <div style="margin-top: 14px;">
+                <button type="submit" class="btn btn-primary">Send</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Sikkerhed fra starten</h2>
+          <p class="text-muted">
+            Alle betalinger behandles af Stripe – en af verdens mest betroede betalingsudbydere.
+            Kortdata når aldrig NORDO. Alt er krypteret og fuldt compliant.
+          </p>
+          <div class="security-logos">
+            <span>Powered by Stripe</span>
+            <span>· Visa</span>
+            <span>· Mastercard</span>
+            <span>· Apple Pay</span>
+            <span>· Google Pay</span>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <span>© 2025 Nordo Payments</span>
+      <span>
+        <a href="#">Privacy</a> · <a href="#">Terms</a> ·
+        <a href="mailto:info@getnordo.com">info@getnordo.com</a>
+      </span>
+    </footer>
+  </div>
+
+  <script>
+    const langButtons = document.querySelectorAll(".lang-btn");
+    const langSections = document.querySelectorAll("[data-lang-section]");
+
+    function setLang(lang) {
+      langButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
+      langSections.forEach((sec) => {
+        sec.classList.toggle("active", sec.dataset.langSection === lang);
+      });
+      document.documentElement.lang = lang === "dk" ? "da" : lang;
+    }
+
+    langButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setLang(btn.dataset.lang));
+    });
+
+    // Standard: Englisch
+    setLang("en");
+  </script>
+</body>
+</html>
